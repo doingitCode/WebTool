@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTool</title>
+    <script src="res/json/copyDataJson.js"></script>
+    <script src="res/json/rulesDataJson.js"></script>
+    <script src="res/diff.js"></script>
+    <script src="res/vue2.js"></script>
+    <script src="res/elementui.js"></script>
+    <link rel="stylesheet" href="res/elementui.css">
+    <link rel="stylesheet" href="res/css.css">
+
+</head>
+
+<body>
+    <!-- <div class="background"></div> -->
+
+    <div class="container" id="app" style="opacity: 0;">
+
+        <!-- 第一层 -->
+        <!-- 临时输入框 -->
+        <el-collapse v-model="showInputPanel">
+            <el-collapse-item title="临时输入" name="1">
+                <div class="inputPanelGroup">
+                    <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4}" :placeholder="'临时输入框'+(i+1)"
+                        v-model="inputPanel[i]" v-for="(e,i) in inputPanel" :key="i" class="inputPanel">
+                    </el-input>
+                </div>
+            </el-collapse-item>
+
+            <el-collapse-item title="文本处理" name="2">
+                <text-tool></text-tool>
+            </el-collapse-item>
+
+            <el-collapse-item title="差异对比" name="3">
+                <diff-tool></diff-tool>
+            </el-collapse-item>
+
+            <el-collapse-item title="常用数据" name="4">
+                <el-table :data="copyData" stripe style="width: 100%" :show-header="false">
+                    <el-table-column prop="label" label="描述" width="250">
+                    </el-table-column>
+                    <el-table-column prop="value" label="数据">
+                        <template slot-scope="scope">
+                            <div class="copy-items">
+                                <el-tag effect="dark" v-for="item in scope.row.value" :key="item" v-copy>{{item}}
+                                </el-tag>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-collapse-item>
+        </el-collapse>
+
+        <!-- 悬浮菜单 -->
+        <div class="bottomMenu">
+            <el-button type="primary" icon="el-icon-top" @click="scrollTop" size="medium" circle title="回到顶部">
+            </el-button>
+        </div>
+
+        <!-- 悬浮加载 -->
+        <div v-show="loadingText" class="loading">
+            <span v-text="loadingText"></span>
+            <i class="el-icon-loading" style="color:#000;"></i>
+        </div>
+
+
+    </div>
+
+    <!-- 文本工具组件 -->
+    <template type="text/x-template" id="textTool">
+        <!-- 列合并 -->
+        <div>
+            <div class="mergeMode" v-show="mergeMode">
+                <el-table :data="tableData" style="width: 100%" border max-height="600" stripe empty-text=" "
+                    height="500px" :span-method="spanMethod" ref="mergeTable">
+                    <el-table-column label="i" :prop="i" v-for="i in rows" :key="i" min-width="250px">
+                        <template slot="header" slot-scope="scope">
+                            <div class="tableInputGroup">
+                                <el-input v-model="searchContent[i]" size="mini" :placeholder="'列 ' + i" type="textarea"
+                                    :rows="3" :autosize="{ minRows: 2, maxRows: 2}" />
+                                </el-input>
+                                <div class="tableInputBtn" style="margin-left: 10px;">
+                                    <el-button type="danger" icon="el-icon-delete" title="删除该列" @click="delRow(i)"
+                                        circle plain></el-button>
+                                </div>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="res" prop="res" fixed="right" width="220px">
+                        <template slot="header" slot-scope="scope">
+                            <div class="tableBtnGroup">
+                                <el-button type="primary" icon="el-icon-plus" title="新增列" @click="addRow" circle>
+                                </el-button>
+                                <!-- <el-button type="primary" icon="el-icon-cpu" title="计算结果" @click="calResult" circle>
+                                </el-button> -->
+                                <el-button type="primary" icon="el-icon-document-copy" title="复制结果"
+                                    @click="copyTableResult" circle></el-button>
+                                <el-button type="primary" @click="mergeMode=false" icon="el-icon-edit-outline" circle
+                                    title="文本处理模式"></el-button>
+                                <el-button type="danger" icon="el-icon-delete" title="清空" @click="clearTable" circle>
+                                </el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+
+            <!-- 文本处理 -->
+            <div class="textToolGroup" v-show="!mergeMode">
+                <!-- 规则与输入框 -->
+                <div class="textContextGroup" v-show="showTextToolInput">
+                    <el-input type="text" placeholder="规则" v-model="repRule[0]" @input="textReplace" tabindex="2"
+                        clearable>
+                        <el-popover placement="bottom" width="400" trigger="manual" slot="append" v-model="hisPopVisible">
+                            <el-divider content-position="center">历史</el-divider>
+                            <el-table :data="historyRules" stripe size="mini" max-height="200" :show-header="false"
+                                @row-click="loadRule">
+                                <el-table-column width="160" property="rule" label="规则" :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column width="160" property="replace"></el-table-column>
+                                <el-table-column width="80">
+                                    <template slot-scope="scope">
+                                        <el-button size="small" plain round icon="el-icon-document-copy"
+                                            @click="saveRule(scope.$index,$event)"></el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <el-divider content-position="center">常用规则</el-divider>
+                            <el-table :data="rulesData" stripe size="mini" max-height="200" :show-header="false"
+                                @row-click="loadRule">
+                                <el-table-column width="120" property="desc" :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column width="140" property="rule" :show-overflow-tooltip="true">
+                                </el-table-column>
+                                <el-table-column width="140" property="replace"></el-table-column>
+                            </el-table>
+                            <el-button slot="reference" icon="el-icon-time"  @click="hisPopVisible = !hisPopVisible"></el-button>
+                        </el-popover>
+                    </el-input>
+                    <el-input type="textarea" placeholder="输入" :autosize="{ minRows: 23, maxRows: 25}"
+                        v-model="textTool[0]" @input="textReplace" tabindex="1"></el-input>
+                </div>
+                <!-- 功能区 -->
+                <div class="textFuncGroup">
+                    <!-- 正则 -->
+                    <button @click="textToolReg=!textToolReg" title="正则匹配"
+                        :class="textToolReg?'regButton':'regButton regButtonActive'" value>Reg</button>
+                    <!-- 替换/提取/过滤 -->
+                    <button @click="textReplaceMode = textReplaceMode + 1 > 2 ? 0 : textReplaceMode + 1"
+                        :title="['替换模式','提取模式','过滤模式'][textReplaceMode]"
+                        :class="'regButton buttonMode' + textReplaceMode">{{['Rep','Get','Flt'][textReplaceMode]}}</button>
+
+                    <!-- 保存/历史 -->
+                    <el-popover placement="top" trigger="hover">
+                        <div style="font-size: 25px;">
+                            <!-- 撤销 -->
+                            <el-button @click="handelHistory('prev')" title="撤销" class="regButton" type="primary" plain
+                                circle>
+                                <i class="el-icon-back"></i>
+                            </el-button>
+                            <!-- 历史ID -->
+                            <button title="历史ID" class="regButton" style="cursor: default;">
+                                <span class="hisIndex">{{historyIndex+1}}/{{textHistory.length}}</span>
+                            </button>
+                            <!-- 重做 -->
+                            <el-button @click="handelHistory('next')" title="重做" class="regButton" type="primary" plain
+                                circle>
+                                <i class="el-icon-right"></i>
+                            </el-button>
+                        </div>
+                        <!-- 复制到输入框 -->
+                        <el-button slot="reference" type="primary" @click="setToolText(textTool[1])"
+                            icon="el-icon-d-arrow-left" plain circle title="将输出内容复制到输入框"></el-button>
+                    </el-popover>
+
+                    <!-- 复制到粘贴板 -->
+                    <el-button type="primary" @click="copy(textTool[1])" icon="el-icon-document-copy" plain circle
+                        title="复制输出"></el-button>
+                    <!-- 格式化 -->
+                    <el-popover placement="left" trigger="hover" popper-class="formatPopper">
+                        <div class="formatGroup">
+                            <!-- XML -->
+                            <button @click="formatXML" title="格式化XML" class="regButton">XML</button>
+                            <!-- JSON -->
+                            <button @click="formatJSON" title="格式化JSON" class="regButton">JSON</button>
+                            <!-- 大驼峰 -->
+                            <button @click="formatLine('Camel')" title="大驼峰" class="regButton">Aaa</button>
+                            <!-- 小驼峰 -->
+                            <button @click="formatLine('camel')" title="小驼峰" class="regButton">aAa</button>
+                            <!-- 字符分割 -->
+                            <button @click="formatLine('chr')" title="字符分割（替换文本框字符）" class="regButton">a_a</button>
+                            <!-- 转大写 -->
+                            <button @click="formatLine('upper')" title="转大写" class="regButton">A</button>
+                            <!-- 转小写 -->
+                            <button @click="formatLine('lower')" title="转小写" class="regButton">a</button>
+                            <!-- trim -->
+                            <button @click="formatLine('trim')" title="去首尾空白符" class="regButton">trim</button>
+                        </div>
+                        <button slot="reference" @click="reset" title="重置格式" class="regButton formatButton">
+                            <i class="el-icon-set-up"></i>
+                            <i class="el-icon-refresh-right"></i>
+                        </button>
+                    </el-popover>
+
+                    <!-- 折叠输入框 -->
+                    <el-button type="primary" @click="showTextToolInput = !showTextToolInput"
+                        :icon="showTextToolInput?'el-icon-s-fold':'el-icon-s-unfold'" plain circle title="折叠/展开输入框">
+                    </el-button>
+                    <!-- 列合并模式 -->
+                    <el-button type="primary" @click="mergeMode=true" icon="el-icon-c-scale-to-original" plain circle
+                        title="列合并模式"></el-button>
+                    <!-- 清空 -->
+                    <el-button type="danger" @click="setToolText('')" icon="el-icon-delete" plain circle title="清空输入框">
+                    </el-button>
+                </div>
+                <!-- 文本与输出框 -->
+                <div class="textContextGroup">
+                    <el-input type="text" placeholder="替换文本" v-model="repRule[1]" @input="textReplace" tabindex="3"
+                        clearable show-word-limit>
+                    </el-input>
+                    <el-input type="textarea" placeholder="输出" :autosize="{ minRows: 23, maxRows: 25}"
+                        v-model="textTool[1]" tabindex="4" readonly></el-input>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template type="text/x-template" id="diffTool">
+        <div class="diffContainer">
+            <div class="diffAreaGroup">
+                <el-input id="diffLeft" type="textarea" placeholder="文本A" :autosize="{ minRows: 3, maxRows: 20}"
+                    v-model="leftContent" @input="changed"></el-input>
+                <el-input id="diffRight" type="textarea" placeholder="文本B" :autosize="{ minRows: 3, maxRows: 20}"
+                    v-model="rightContent" @input="changed"></el-input>
+            </div>
+            <div class="areaResizeBar" @dblclick="areaScale"><i class="el-icon-minus"></i></div>
+
+            <table id="diffTable" :class="left?'leftSelect':'rightSelect'" v-show="leftContent+rightContent != ''">
+                <tr v-for="(item,index) in diff">
+                    <template v-if="item[0]">
+                        <td class="line del-line left-side" @mousedown="left=true" v-html="filter(item[1],'ins')"></td>
+                        <td class="line index-line">{{index}}</td>
+                        <td class="line ins-line right-side" @mousedown="left=false" v-html="filter(item[1],'del')">
+                        </td>
+                    </template>
+                    <template v-else>
+                        <td class="line left-side" @mousedown="left=true" v-html="filter(item[1])"></td>
+                        <td class="line index-line">{{index}}</td>
+                        <td class="line right-side" @mousedown="left=false" v-html="filter(item[1])"></td>
+                    </template>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+</body>
+<script src="res/js.js"></script>
+
+</html>

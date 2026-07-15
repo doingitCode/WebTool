@@ -1,0 +1,416 @@
+* {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.url {
+    color: #aaa;
+    margin: 0 5px;
+}
+
+.menu-list {
+    border-left: 2px solid #ddd;
+    padding-left: 20px;
+    margin: 5px 0;
+    transition: all .1s linear;
+}
+
+li {
+    padding: 0px 0;
+}
+
+.cell {
+    padding: 15px;
+    margin: 0px;
+    transition: all .1s linear;
+    display: inline-block;
+}
+
+.focus {
+    padding: 15px;
+    margin: 0 0 15px 0;
+    box-shadow: 0px 0px 4px 1px rgba(128, 128, 128, .5) inset;
+    border-radius: 3px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-default {
+    cursor: default;
+}
+
+.path {
+    display: inline-block;
+    margin: 0 0 20px 30px;
+    color: #606266;
+}
+
+.container {
+    padding: 0 20px;
+}
+
+.action {
+    min-width: 700px;
+}
+
+.menu {
+    font-size: 1.1rem;
+}
+
+.page {
+    color: #404244;
+}
+
+span {
+    letter-spacing: .5px;
+}
+
+.userlist>span:nth-child(1) {
+    display: inline-block;
+    width: 70%;
+}
+
+.suggest>div {
+    display: inline-block;
+    width: 60%;
+}
+
+.tableSuggest>div {
+    display: inline-block;
+    width: 50%;
+}
+
+.tableSuggest>div>div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tableSuggest {
+    border-bottom: 1px solid #ddd;
+    display: flex;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar>* {
+    margin-right: 40px;
+    margin: 20px 40px 0 0;
+}
+
+.el-table .cell {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.bottomMenu {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    text-align: center;
+}
+
+.treeSW {
+    margin-top: 20px;
+}
+
+.loading {
+    color: #666;
+    font-size: 15px;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.inputPanelGroup {
+    display: flex;
+    justify-content: space-around;
+}
+
+.inputPanel {
+    margin: 10px;
+}
+
+.el-collapse-item__header {
+    color: #888;
+}
+
+.copy-items .el-tag {
+    margin-right: 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.copy-items .el-tag:hover {
+    background-color: #66b1ff;
+    border-color: #66b1ff;
+}
+
+.textToolGroup {
+    display: flex;
+    justify-content: space-between;
+}
+
+.textFuncGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.textFuncGroup>* {
+    margin: 10px 0 !important;
+}
+
+.textContextGroup .el-input {
+    margin-bottom: 10px;
+}
+
+.textContextGroup {
+    width: 100%;
+}
+
+.regButton {
+    border-radius: 50%;
+    border: 1px solid #b3d8ff;
+    color: #409EFF;
+    background-color: #ecf5ff;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 12px;
+    outline: none;
+}
+
+.regButtonActive {
+    background-color: #f4f4f5;
+    border-color: #e9e9eb;
+    color: #909399;
+}
+
+.buttonMode0 {
+    background-color: #ecf5ff;
+    border-color: #b3d8ff;
+    color: #409eff;
+}
+
+.buttonMode1 {
+    background-color: #f0f9eb;
+    border-color: #b1f3a8;
+    color: #67C23A;
+}
+
+.buttonMode2 {
+    background-color: #fdf6ec;
+    border-color: #ffd9a5;
+    color: #E6A23C;
+}
+
+body::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+*::-webkit-scrollbar {
+    width: 4px;
+    background-color: #eee;
+}
+
+body::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 4px;
+}
+
+body {
+    height: 100vh;
+}
+
+.background {
+    background-image: url('./back.jpg');
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: -1;
+    /* display: none; */
+}
+
+.tableInputGroup,
+.tableBtnGroup {
+    display: flex;
+}
+
+
+ins {
+    background-color: #a4e9b6;
+    text-decoration: none;
+}
+
+del {
+    background-color: #ffb3bf;
+    text-decoration: none;
+}
+
+.diffContainer {
+    width: 90%;
+    margin: auto;
+}
+
+.diffContainer #result,
+.diffContainer #result2 {
+    background-color: #ccc;
+    width: 50%;
+    height: 50%;
+    overflow: scroll;
+}
+
+.diffContainer .line {
+    vertical-align: top;
+}
+
+.diffContainer tr:hover>td:nth-child(2) {
+    box-shadow: 0px 0px 5px 1px rgba(128, 128, 128, .6);
+    border-radius: 3px;
+    color: #555;
+}
+
+.diffContainer .ins-line {
+    background-color: #ddfbe6;
+}
+
+.diffContainer .del-line {
+    background-color: #f9d7dc;
+}
+
+.diffContainer .leftSelect .right-side,
+.diffContainer .rightSelect .left-side,
+.diffContainer .index-line {
+    user-select: none;
+}
+
+.diffAreaGroup {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    /* box-shadow: 0px 0px 5px 1px rgba(128, 128, 128, .4); */
+    padding: 10px;
+    box-sizing: border-box;
+    margin-top: 5px;
+    border-radius: 5px;
+}
+
+
+#diffTable {
+    margin: auto;
+    border-spacing: 5px 0px;
+    border-radius: 5px;
+    padding: 10px;
+    /* box-shadow: 0px 0px 10px 1px rgba(128, 128, 128, .4) inset; */
+}
+
+.left-side,
+.right-side {
+    word-break: break-word;
+    width: 50%;
+}
+
+.diffContainer .el-textarea {
+    width: 49%;
+    border: none;
+}
+
+.areaResizeBar {
+    width: 98%;
+    height: 12px;
+    margin: 10px auto;
+    user-select: none;
+    cursor: n-resize;
+    text-align: center;
+    border-radius: 10px;
+    line-height: 12px;
+    box-shadow: 0px 0px 8px 1px rgba(128, 128, 128, .2);
+}
+
+.index-line {
+    color: #999;
+    text-align: center;
+    padding: 3px;
+}
+
+#scrollLeft,
+#scrollRight {
+    width: 30px;
+    padding: 5px 0;
+    border: none;
+    line-height: 1.5;
+}
+
+.diffAreaGroup .el-textarea__inner {
+    border: none;
+    box-shadow: rgb(221, 221, 221) 0px 0px 5px 1px inset;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    resize: none;
+}
+
+.applyItem:not(:nth-last-child(1))::after {
+    content: ' / ';
+}
+
+.formatGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.formatButton {
+    line-height: 12px;
+    font-size: 17px;
+}
+
+.formatPopper {
+    width: 40px;
+    min-width: 40px;
+}
+
+.formatButton .el-icon-set-up {
+    position: absolute;
+    transition: all 0.2s ease;
+}
+
+.formatButton .el-icon-refresh-right {
+    opacity: 0;
+    transform: rotate(-180deg);
+    transition: all 0.2s ease;
+}
+
+.formatButton:hover .el-icon-set-up {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+.formatButton:hover .el-icon-refresh-right {
+    opacity: 1;
+    transform: rotate(0deg);
+    animation: spin 0.4s ease;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
